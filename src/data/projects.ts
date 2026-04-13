@@ -23,6 +23,7 @@ export interface Project {
   clientName: string;
   projectName: string;
   logoUrl?: string;
+  architectureImageUrl?: string;
   startDate: string;
   estimatedEndDate: string;
   status: "em_andamento" | "concluido" | "pausado";
