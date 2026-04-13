@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router';
 import type { Project, Phase, Task } from '@/data/projects';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +7,6 @@ import {
   Clock,
   CalendarDays,
   Layers,
-  ArrowLeft,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -104,10 +102,7 @@ export function ProjectPage({ project }: { project: Project }) {
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-border bg-landing-bg/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <Link to="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-            <img src="/images/imperius-logo.png" alt="Imperius Tech" className="h-7" />
-          </Link>
+          <img src="/images/imperius-logo.png" alt="Imperius Tech" className="h-7" />
           <span className="hidden text-sm font-medium text-foreground sm:block">{project.projectName}</span>
           <Badge variant="outline" className={project.status === 'em_andamento' ? 'bg-phase-planning/10 text-phase-planning border-phase-planning/20' : 'bg-muted text-muted-foreground'}>
             {statusLabel[project.status]}

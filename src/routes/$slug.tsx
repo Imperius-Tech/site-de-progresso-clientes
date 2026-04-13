@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { getProject } from '@/data/projects';
 import { ProjectPage } from '@/components/project-page';
 
-export const Route = createFileRoute('/projects/$slug')({
+export const Route = createFileRoute('/$slug')({
   head: ({ params }) => {
     const project = getProject(params.slug);
     const title = project ? `${project.projectName} — ${project.clientName}` : 'Projeto não encontrado';
