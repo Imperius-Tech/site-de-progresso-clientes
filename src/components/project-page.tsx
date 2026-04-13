@@ -102,8 +102,7 @@ export function ProjectPage({ project }: { project: Project }) {
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-border bg-landing-bg/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <img src="/images/imperius-logo.png" alt="Imperius Tech" className="h-7" />
-          <span className="hidden text-sm font-medium text-foreground sm:block">{project.projectName}</span>
+          <span className="text-sm font-medium text-foreground">{project.projectName}</span>
           <Badge variant="outline" className={project.status === 'em_andamento' ? 'bg-phase-planning/10 text-phase-planning border-phase-planning/20' : 'bg-muted text-muted-foreground'}>
             {statusLabel[project.status]}
           </Badge>
@@ -224,11 +223,33 @@ export function ProjectPage({ project }: { project: Project }) {
             ))}
           </div>
         </section>
+
+        {/* Architecture diagram */}
+        {project.architectureImageUrl && (
+          <section className="mb-16">
+            <div className="mb-6 text-center">
+              <h2 className="font-serif text-2xl font-bold text-landing-dark">Arquitetura do sistema</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Visão geral de como tudo funciona</p>
+            </div>
+            <Card>
+              <CardContent className="p-4 sm:p-6">
+                <img
+                  src={project.architectureImageUrl}
+                  alt={`Arquitetura do ${project.projectName}`}
+                  className="mx-auto w-full max-w-3xl rounded-lg"
+                />
+              </CardContent>
+            </Card>
+          </section>
+        )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border px-6 py-6 text-center text-xs text-landing-light-muted">
-        Desenvolvido por <span className="font-medium text-landing-dark">Imperius Tech</span> · {new Date().getFullYear()}
+      <footer className="border-t border-border px-6 py-8 text-center">
+        <img src="/images/imperius-logo.png" alt="Imperius Tech" className="mx-auto mb-3 h-8" />
+        <p className="text-xs text-landing-light-muted">
+          Desenvolvido por <span className="font-medium text-landing-dark">Imperius Tech</span> · {new Date().getFullYear()}
+        </p>
       </footer>
     </div>
   );
