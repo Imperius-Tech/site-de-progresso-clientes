@@ -15,6 +15,7 @@ import { Route as EmployeesRouteImport } from './routes/employees'
 import { Route as AiChatRouteImport } from './routes/ai-chat'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssetsIndexRouteImport } from './routes/assets.index'
+import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as AssetsNewRouteImport } from './routes/assets.new'
 import { Route as AssetsAssetIdRouteImport } from './routes/assets.$assetId'
 import { Route as AssetsAssetIdEditRouteImport } from './routes/assets.$assetId.edit'
@@ -49,6 +50,11 @@ const AssetsIndexRoute = AssetsIndexRouteImport.update({
   path: '/assets/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
+  id: '/projects/$slug',
+  path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AssetsNewRoute = AssetsNewRouteImport.update({
   id: '/assets/new',
   path: '/assets/new',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/assets/$assetId': typeof AssetsAssetIdRouteWithChildren
   '/assets/new': typeof AssetsNewRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
   '/assets/': typeof AssetsIndexRoute
   '/assets/$assetId/edit': typeof AssetsAssetIdEditRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/assets/$assetId': typeof AssetsAssetIdRouteWithChildren
   '/assets/new': typeof AssetsNewRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
   '/assets': typeof AssetsIndexRoute
   '/assets/$assetId/edit': typeof AssetsAssetIdEditRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/assets/$assetId': typeof AssetsAssetIdRouteWithChildren
   '/assets/new': typeof AssetsNewRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
   '/assets/': typeof AssetsIndexRoute
   '/assets/$assetId/edit': typeof AssetsAssetIdEditRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/assets/$assetId'
     | '/assets/new'
+    | '/projects/$slug'
     | '/assets/'
     | '/assets/$assetId/edit'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/assets/$assetId'
     | '/assets/new'
+    | '/projects/$slug'
     | '/assets'
     | '/assets/$assetId/edit'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/assets/$assetId'
     | '/assets/new'
+    | '/projects/$slug'
     | '/assets/'
     | '/assets/$assetId/edit'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   AssetsAssetIdRoute: typeof AssetsAssetIdRouteWithChildren
   AssetsNewRoute: typeof AssetsNewRoute
+  ProjectsSlugRoute: typeof ProjectsSlugRoute
   AssetsIndexRoute: typeof AssetsIndexRoute
 }
 
@@ -190,6 +203,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssetsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/$slug': {
+      id: '/projects/$slug'
+      path: '/projects/$slug'
+      fullPath: '/projects/$slug'
+      preLoaderRoute: typeof ProjectsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/assets/new': {
       id: '/assets/new'
       path: '/assets/new'
@@ -234,6 +254,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   AssetsAssetIdRoute: AssetsAssetIdRouteWithChildren,
   AssetsNewRoute: AssetsNewRoute,
+  ProjectsSlugRoute: ProjectsSlugRoute,
   AssetsIndexRoute: AssetsIndexRoute,
 }
 export const routeTree = rootRouteImport
