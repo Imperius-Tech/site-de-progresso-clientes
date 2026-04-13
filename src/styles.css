@@ -143,6 +143,13 @@
   --landing-grid: oklch(0.88 0.008 85);
 }
 
+:root {
+  --phase-planning: oklch(0.55 0.15 250);
+  --phase-development: oklch(0.50 0.18 300);
+  --phase-quality: oklch(0.65 0.18 55);
+  --phase-delivery: oklch(0.55 0.18 155);
+}
+
 @theme inline {
   --color-landing-bg: var(--landing-bg);
   --color-landing-dark: var(--landing-dark);
@@ -152,6 +159,10 @@
   --color-landing-accent: var(--landing-accent);
   --color-landing-accent-soft: var(--landing-accent-soft);
   --color-landing-grid: var(--landing-grid);
+  --color-phase-planning: var(--phase-planning);
+  --color-phase-development: var(--phase-development);
+  --color-phase-quality: var(--phase-quality);
+  --color-phase-delivery: var(--phase-delivery);
 }
 
 @layer base {
@@ -163,5 +174,9 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: 'Onest', system-ui, sans-serif;
+  }
+
+  .font-serif {
+    font-family: 'DM Serif Display', serif;
   }
 }
