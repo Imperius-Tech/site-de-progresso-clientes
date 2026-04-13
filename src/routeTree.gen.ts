@@ -13,9 +13,9 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as EmployeesRouteImport } from './routes/employees'
 import { Route as AiChatRouteImport } from './routes/ai-chat'
+import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssetsIndexRouteImport } from './routes/assets.index'
-import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as AssetsNewRouteImport } from './routes/assets.new'
 import { Route as AssetsAssetIdRouteImport } from './routes/assets.$assetId'
 import { Route as AssetsAssetIdEditRouteImport } from './routes/assets.$assetId.edit'
@@ -40,6 +40,11 @@ const AiChatRoute = AiChatRouteImport.update({
   path: '/ai-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SlugRoute = SlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -48,11 +53,6 @@ const IndexRoute = IndexRouteImport.update({
 const AssetsIndexRoute = AssetsIndexRouteImport.update({
   id: '/assets/',
   path: '/assets/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
-  id: '/projects/$slug',
-  path: '/projects/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AssetsNewRoute = AssetsNewRouteImport.update({
@@ -73,38 +73,38 @@ const AssetsAssetIdEditRoute = AssetsAssetIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$slug': typeof SlugRoute
   '/ai-chat': typeof AiChatRoute
   '/employees': typeof EmployeesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/assets/$assetId': typeof AssetsAssetIdRouteWithChildren
   '/assets/new': typeof AssetsNewRoute
-  '/projects/$slug': typeof ProjectsSlugRoute
   '/assets/': typeof AssetsIndexRoute
   '/assets/$assetId/edit': typeof AssetsAssetIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$slug': typeof SlugRoute
   '/ai-chat': typeof AiChatRoute
   '/employees': typeof EmployeesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/assets/$assetId': typeof AssetsAssetIdRouteWithChildren
   '/assets/new': typeof AssetsNewRoute
-  '/projects/$slug': typeof ProjectsSlugRoute
   '/assets': typeof AssetsIndexRoute
   '/assets/$assetId/edit': typeof AssetsAssetIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$slug': typeof SlugRoute
   '/ai-chat': typeof AiChatRoute
   '/employees': typeof EmployeesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/assets/$assetId': typeof AssetsAssetIdRouteWithChildren
   '/assets/new': typeof AssetsNewRoute
-  '/projects/$slug': typeof ProjectsSlugRoute
   '/assets/': typeof AssetsIndexRoute
   '/assets/$assetId/edit': typeof AssetsAssetIdEditRoute
 }
@@ -112,50 +112,50 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$slug'
     | '/ai-chat'
     | '/employees'
     | '/reset-password'
     | '/settings'
     | '/assets/$assetId'
     | '/assets/new'
-    | '/projects/$slug'
     | '/assets/'
     | '/assets/$assetId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$slug'
     | '/ai-chat'
     | '/employees'
     | '/reset-password'
     | '/settings'
     | '/assets/$assetId'
     | '/assets/new'
-    | '/projects/$slug'
     | '/assets'
     | '/assets/$assetId/edit'
   id:
     | '__root__'
     | '/'
+    | '/$slug'
     | '/ai-chat'
     | '/employees'
     | '/reset-password'
     | '/settings'
     | '/assets/$assetId'
     | '/assets/new'
-    | '/projects/$slug'
     | '/assets/'
     | '/assets/$assetId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SlugRoute: typeof SlugRoute
   AiChatRoute: typeof AiChatRoute
   EmployeesRoute: typeof EmployeesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SettingsRoute: typeof SettingsRoute
   AssetsAssetIdRoute: typeof AssetsAssetIdRouteWithChildren
   AssetsNewRoute: typeof AssetsNewRoute
-  ProjectsSlugRoute: typeof ProjectsSlugRoute
   AssetsIndexRoute: typeof AssetsIndexRoute
 }
 
@@ -189,6 +189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$slug': {
+      id: '/$slug'
+      path: '/$slug'
+      fullPath: '/$slug'
+      preLoaderRoute: typeof SlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -201,13 +208,6 @@ declare module '@tanstack/react-router' {
       path: '/assets'
       fullPath: '/assets/'
       preLoaderRoute: typeof AssetsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects/$slug': {
-      id: '/projects/$slug'
-      path: '/projects/$slug'
-      fullPath: '/projects/$slug'
-      preLoaderRoute: typeof ProjectsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assets/new': {
@@ -248,13 +248,13 @@ const AssetsAssetIdRouteWithChildren = AssetsAssetIdRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SlugRoute: SlugRoute,
   AiChatRoute: AiChatRoute,
   EmployeesRoute: EmployeesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SettingsRoute: SettingsRoute,
   AssetsAssetIdRoute: AssetsAssetIdRouteWithChildren,
   AssetsNewRoute: AssetsNewRoute,
-  ProjectsSlugRoute: ProjectsSlugRoute,
   AssetsIndexRoute: AssetsIndexRoute,
 }
 export const routeTree = rootRouteImport
