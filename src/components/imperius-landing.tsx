@@ -51,7 +51,7 @@ export function ImperiusLanding() {
             return (
               <Link
                 key={project.slug}
-                to="/projects/$slug"
+                to="/$slug"
                 params={{ slug: project.slug }}
                 className="group"
               >
