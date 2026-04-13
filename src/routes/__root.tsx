@@ -41,6 +41,8 @@ export const Route = createRootRoute({
       { name: "twitter:description", content: "Acompanhe em tempo real o progresso dos projetos desenvolvidos pela Imperius Tech." },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/8JNABpLnp7Mx4rKPqtRXqYncb2k2/social-images/social-1776123291253-logo-imperius-rebranding.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/8JNABpLnp7Mx4rKPqtRXqYncb2k2/social-images/social-1776123291253-logo-imperius-rebranding.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
