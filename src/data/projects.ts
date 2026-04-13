@@ -36,6 +36,7 @@ const projects: Project[] = [
     clientName: "Buyate Contabilidade",
     projectName: "Sistema AI-First",
     logoUrl: "/images/buyate-logo.jpeg",
+    architectureImageUrl: "/images/arquitetura-buyate-visual.png",
     startDate: "2026-04-11",
     estimatedEndDate: "2026-07-11",
     status: "em_andamento",
