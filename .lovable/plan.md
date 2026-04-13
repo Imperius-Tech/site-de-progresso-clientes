@@ -1,116 +1,65 @@
 
 
-## Plan: Security hardening with RLS and user roles
+## Plan: Transform AssetWise into Imperius Tech project tracking hub
 
-### Current state
-- RLS is enabled on all 4 tables (good)
-- All policies are wide-open: `for all to authenticated using (true) with check (true)`
-- No user_roles table exists
-- No role-checking functions exist
-- AI chat edge function uses service_role_key (bypasses RLS — no changes needed there)
+This plan replaces the current AssetWise asset tracking app with a public project progress tracking site for Imperius Tech clients.
 
-### What this changes
+### What will be built
 
-**1. Database migration — new tables and functions**
+A multi-client project tracking hub where clients can view their project progress. The first client is Buyate Contabilidade. The site is read-only — no authentication needed for viewing.
 
-Create `app_role` enum, `user_roles` table, and `has_role` security definer function:
+### Files to create
 
-```sql
--- Role enum
-CREATE TYPE public.app_role AS ENUM ('admin', 'moderator', 'user');
+1. **`src/data/projects.ts`** — Mock data file with the Buyate project JSON and TypeScript interfaces (`Project`, `Phase`, `Task`). Exports a `getProject(slug)` and `getAllProjects()` function, structured for easy future API swap.
 
--- Roles table (NOT on profiles)
-CREATE TABLE public.user_roles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  role app_role NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  UNIQUE (user_id, role)
-);
+2. **`src/components/project-page.tsx`** — Main project page component with all sections:
+   - Header: Imperius logo + project name + status badge
+   - Hero: project name, client name, dates
+   - Overall progress bar (tasks completed / total)
+   - 4 summary cards (completed tasks, current phase, next deadline, days remaining)
+   - Phase progress section with colored bars per phase
+   - Task list table with status badges and filtering
+   - Phase detail cards
+   - Footer with Imperius branding
 
-ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+3. **`src/components/imperius-landing.tsx`** — Simple landing page: Imperius logo, tagline, list of active projects with links.
 
--- Users can only read their own roles
-CREATE POLICY "Users can view own roles"
-  ON public.user_roles FOR SELECT
-  TO authenticated
-  USING (auth.uid() = user_id);
+4. **`src/routes/projects.$slug.tsx`** — Dynamic route for `/projects/:slug` that loads and displays a project.
 
--- Security definer function (avoids RLS recursion)
-CREATE OR REPLACE FUNCTION public.has_role(_user_id UUID, _role app_role)
-RETURNS BOOLEAN
-LANGUAGE sql STABLE SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM public.user_roles
-    WHERE user_id = _user_id AND role = _role
-  )
-$$;
+### Files to modify
+
+5. **`src/routes/index.tsx`** — Replace current logic with the Imperius landing page (remove auth/AssetWise dashboard).
+
+6. **`src/routes/__root.tsx`** — Update title, description, og:tags from "AssetWise" to "Imperius Tech". Add Google Fonts link for a serif font (e.g., DM Serif Display) for headings.
+
+7. **`src/styles.css`** — Add CSS custom properties for phase colors (blue, purple, orange, green) and register them in `@theme inline`.
+
+### Files to keep (uploaded logos)
+
+8. Copy `user-uploads://logo-imperius-rebranding.png` to `public/images/imperius-logo.png`
+9. Copy `user-uploads://WhatsApp_Image_2026-04-09_at_11.32.20.jpeg` to `public/images/buyate-logo.jpeg`
+
+### Design approach
+
+- Keep the existing warm cream/charcoal palette (`--landing-*` tokens)
+- Keep dot-grid backgrounds, white cards with subtle borders, pill buttons
+- Add DM Serif Display for large headings (serif feel requested)
+- Status badges: green (concluida), blue (em_andamento), gray (pendente), red (impedida)
+- Phase colors: blue (planning), purple (development), orange (quality), green (delivery)
+- Mobile-first, responsive grid layouts
+- Progress bars use the existing `Progress` component with color overrides
+
+### Route structure
+
+```text
+/                    → Imperius landing (list of projects)
+/projects/buyate     → Buyate project page
 ```
 
-**2. Database migration — replace existing RLS policies**
+### Technical notes
 
-Drop the 4 catch-all policies and replace with granular per-operation policies:
-
-For **asset_categories**, **employees**, **assets**, **asset_assignments**:
-- `SELECT` — all authenticated users (internal staff all need read access)
-- `INSERT` — all authenticated users (staff create assets/employees)
-- `UPDATE` — all authenticated users OR restrict to admins (for categories/sensitive ops)
-- `DELETE` — admin only via `has_role(auth.uid(), 'admin')`
-
-Specific policies:
-
-| Table | SELECT | INSERT | UPDATE | DELETE |
-|---|---|---|---|---|
-| asset_categories | authenticated | authenticated | authenticated | admin only |
-| employees | authenticated | authenticated | authenticated | admin only |
-| assets | authenticated | authenticated (with `created_by = auth.uid()` check) | authenticated | admin only |
-| asset_assignments | authenticated | authenticated | authenticated | admin only |
-
-The `assets` INSERT policy adds `WITH CHECK (created_by = auth.uid())` to ensure users can't spoof the creator.
-
-**3. Auto-assign 'user' role on signup**
-
-Create a trigger function that assigns the default `'user'` role when a new user signs up:
-
-```sql
-CREATE OR REPLACE FUNCTION public.handle_new_user_role()
-RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-  INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'user');
-  RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER on_auth_user_created_role
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user_role();
-```
-
-**4. Seed existing users with roles**
-
-Use the insert tool to give all existing users the `'user'` role, and optionally promote one to `'admin'`.
-
-**5. Add role-check hook (`src/lib/hooks.ts`)**
-
-Add a `useUserRole` query hook so the UI can check the current user's role for conditional rendering (e.g., hide delete buttons for non-admins). This is for UX only — the real enforcement is RLS.
-
-**6. No changes to AI chat**
-
-The edge function uses `SUPABASE_SERVICE_ROLE_KEY` which bypasses RLS entirely. No modifications needed.
-
-### Files changed
-
-| File | Action |
-|---|---|
-| Migration SQL | Create — roles table, has_role function, replace RLS policies, trigger |
-| `src/lib/hooks.ts` | Edit — add `useUserRole` hook |
-
-### What stays the same
-- All existing CRUD operations continue working for authenticated users
-- AI chat edge function untouched
-- No component changes needed (delete restrictions will surface as toast errors from RLS denials)
+- No database changes needed — all data is mocked client-side for now
+- The mock data structure matches the provided interfaces exactly, ready for future API integration
+- Existing AssetWise routes (`/assets`, `/employees`, `/settings`, etc.) will remain in the codebase but won't be linked from the new landing page
+- The `getProject` function is designed so swapping to `fetch()` later requires changing only that function
 
